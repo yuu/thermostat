@@ -1,0 +1,17 @@
+syntax = "proto3";
+option go_package = "github.com/yuu/thermostat/bto";
+
+package bto;
+
+message WriteRequest {
+  int32 frequency = 1;
+  repeated uint32 data = 2;
+}
+
+message WriteResponse {
+  int32 code = 1;
+}
+
+service IRService {
+  rpc Write(WriteRequest) returns (WriteResponse) {}
+}
