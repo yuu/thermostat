@@ -1,18 +1,29 @@
 package main
 
 import (
-	"context"
 	"log"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/yuu/thermostat/bto"
 	"google.golang.org/grpc"
+
+	"github.com/yuu/thermostat/bto"
+	cl "github.com/yuu/thermostat/controller"
 )
 
 const (
 	address = "localhost:50051"
 )
+
+// /status
+// /targetHeatingCoolingState/{INT_VALUE__0_TO_3}
+// /targetTemperature/{INT_VALUE}
+// /targetRelativeHumidity/{FLOAT_VALUE}
+func routing(r *gin.Engine, ctrl *cl.Controller) {
+	r.GET("/status", ctrl.Status)
+	r.GET("/targetHeatingCoolingState/:id", ctrl.TargetHeatingCoolingState)
+	r.GET("/targetTemperature/:id", ctrl.TargetTemperature)
+	r.GET("/targetRelativeHumidity/:id", ctrl.TargetRelativeHumidity)
+}
 
 func main() {
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
@@ -22,23 +33,20 @@ func main() {
 	defer conn.Close()
 
 	client := bto.NewIRServiceClient(conn)
-
+        irclient := bto.NewThermostatController(client)
+	ctrl := cl.Controller{
+		Client: irclient,
+		State: cl.Status{
+			CurrentHeatingCoolingState: 0,
+			CurrentTemperature:         0,
+			CurrentRelativeHumidity:    0,
+			TargetHeatingCoolingState:  0,
+			TargetTemperature:          0,
+			TargetRelativeHumidity:     0,
+		},
+	}
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-
-		req := bto.WriteRequest{
-			Frequency: 38000,
-			Data:      []uint32{0x00, 0x00},
-		}
-		res, err := client.Write(ctx, &req)
-		if err != nil {
-			log.Fatalf("could not write: %v", err)
-		}
-
-		c.JSON(200, gin.H{"message": "pong", "code": res.GetCode()})
-	})
+	routing(r, &ctrl)
 
 	r.Run(":3000")
 }
