@@ -15,7 +15,7 @@ prepare:  ## download grpc plugin for golang
 	go get -u github.com/golang/protobuf/protoc-gen-go
 
 generate:  ## generate grpc
-	protoc -I bto --go_out=plugins=grpc:bto --go_opt=module=github.com/yuu/thermostat bto/ir_service.proto
+	protoc -I bto --go_out=plugins=grpc:. --go_opt=module=github.com/yuu/thermostat bto/ir_service.proto
 
 vendor:
 	go mod vendor
