@@ -7,7 +7,6 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/yuu/thermostat/bto"
-	cl "github.com/yuu/thermostat/controller"
 )
 
 const (
@@ -18,7 +17,7 @@ const (
 // /targetHeatingCoolingState/{INT_VALUE__0_TO_3}
 // /targetTemperature/{INT_VALUE}
 // /targetRelativeHumidity/{FLOAT_VALUE}
-func routing(r *gin.Engine, ctrl *cl.Controller) {
+func routing(r *gin.Engine, ctrl *Controller) {
 	r.GET("/status", ctrl.Status)
 	r.GET("/targetHeatingCoolingState/:id", ctrl.TargetHeatingCoolingState)
 	r.GET("/targetTemperature/:id", ctrl.TargetTemperature)
@@ -34,9 +33,9 @@ func main() {
 
 	client := bto.NewIRServiceClient(conn)
         irclient := bto.NewThermostatController(client)
-	ctrl := cl.Controller{
+	ctrl := Controller{
 		Client: irclient,
-		State: cl.Status{
+		State: Status{
 			CurrentHeatingCoolingState: 0,
 			CurrentTemperature:         0,
 			CurrentRelativeHumidity:    0,

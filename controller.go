@@ -1,4 +1,4 @@
-package controller
+package main
 
 import (
         "log"
@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/yuu/thermostat/bto"
+	"thermostat.org/bto"
 )
 
 const (
