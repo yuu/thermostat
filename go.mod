@@ -4,7 +4,8 @@ go 1.13
 
 require (
 	github.com/gin-gonic/gin v1.6.3
-	github.com/golang/protobuf v1.4.2
-	google.golang.org/grpc v1.27.0
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/grpc v1.31.1
+	thermostat.org/bto v0.0.0-00010101000000-000000000000
 )
+
+replace thermostat.org/bto => ./bto

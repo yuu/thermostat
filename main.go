@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 
-	"github.com/yuu/thermostat/bto"
+	"thermostat.org/bto"
 )
 
 const (
