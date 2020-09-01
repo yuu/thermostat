@@ -2,15 +2,15 @@ package main
 
 import (
 	"log"
+        "flag"
+        "fmt"
+        "os"
 
 	"github.com/gin-gonic/gin"
+        "github.com/pelletier/go-toml"
 	"google.golang.org/grpc"
 
 	"thermostat.org/bto"
-)
-
-const (
-	address = "localhost:50051"
 )
 
 // /status
@@ -25,6 +25,26 @@ func routing(r *gin.Engine, ctrl *Controller) {
 }
 
 func main() {
+        var (
+                host = flag.String("host", "localhost", "host address")
+                port = flag.Int("port", 50051, "port number")
+                irPath = flag.String("ir", "", "ir data path")
+        )
+        flag.Parse()
+
+        file, err := os.Open(*irPath)
+        if err != nil {
+                log.Fatalf("open error: %v, file: %v", err, *irPath)
+                return
+        }
+        decoder := toml.NewDecoder(file)
+        var conf bto.Config
+        if err := decoder.Decode(&conf); err != nil {
+                log.Fatalf("toml parser error: %v", err)
+                return
+        }
+
+        address := fmt.Sprintf("%v:%d", *host, *port)
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -32,7 +52,7 @@ func main() {
 	defer conn.Close()
 
 	client := bto.NewIRServiceClient(conn)
-        irclient := bto.NewThermostatController(client)
+        irclient := bto.NewThermostatController(client, conf)
 	ctrl := Controller{
 		Client: irclient,
 		State: Status{

@@ -31,11 +31,6 @@ type Controller struct {
         State Status
 }
 
-// func(c *gin.Context) {
-
-
-//         c.JSON(200, gin.H{"message": "pong", "code": res.GetCode()})
-// }
 func (c *Controller) Status(ctx *gin.Context) {
         ctx.JSON(http.StatusOK, c.State)
 }
