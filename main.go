@@ -4,13 +4,12 @@ import (
 	"log"
         "flag"
         "fmt"
-        "os"
 
 	"github.com/gin-gonic/gin"
-        "github.com/pelletier/go-toml"
 	"google.golang.org/grpc"
 
 	"thermostat.org/bto"
+        "thermostat.org/defaults"
 )
 
 // /status
@@ -32,17 +31,9 @@ func main() {
         )
         flag.Parse()
 
-        file, err := os.Open(*irPath)
-        if err != nil {
-                log.Fatalf("open error: %v, file: %v", err, *irPath)
-                return
-        }
-        decoder := toml.NewDecoder(file)
         var conf bto.Config
-        if err := decoder.Decode(&conf); err != nil {
-                log.Fatalf("toml parser error: %v", err)
-                return
-        }
+        irDataHander := defaults.New(*irPath)
+        irDataHander.Load(&conf)
 
         address := fmt.Sprintf("%v:%d", *host, *port)
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
