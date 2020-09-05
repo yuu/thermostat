@@ -1,12 +1,14 @@
 package main
 
 import (
+        "os"
         "log"
         "net/http"
 
 	"github.com/gin-gonic/gin"
 
 	"thermostat.org/bto"
+        "thermostat.org/defaults"
 )
 
 const (
@@ -17,6 +19,8 @@ const (
 )
 
 type Status struct {
+        handler defaults.Defaults
+
         CurrentHeatingCoolingState int `json:"CurrentHeatingCoolingState"`
         CurrentTemperature         float64 `json:"CurrentTemperature"`
         CurrentRelativeHumidity    float64 `json:"CurrentRelativeHumidity"`
@@ -26,26 +30,78 @@ type Status struct {
         TargetRelativeHumidity     float64 `json:"TargetRelativeHumidity"`
 }
 
+func (s *Status) save() {
+        s.handler.Save(s)
+}
+
+func (s *Status) load() {
+        s.handler.Load(s)
+}
+
 type Controller struct {
-	Client bto.ThermostatController
-        State Status
+	irClient bto.ThermostatController
+        state Status
+}
+
+type intParam struct {
+        ID int `uri:"id"`
+}
+type floatParam struct {
+        ID float64 `uri:"id"`
+}
+
+func NewController(irCtrl bto.ThermostatController) *Controller {
+        home := os.Getenv("HOME")
+        var state Status
+        handler := defaults.New(home + "/.config/io.flutia.thermostat.toml")
+        state.handler = handler
+        state.load()
+
+        return &Controller{irCtrl, state}
 }
 
 func (c *Controller) Status(ctx *gin.Context) {
-        ctx.JSON(http.StatusOK, c.State)
+        ctx.JSON(http.StatusOK, c.state)
 }
 
 func (c *Controller) TargetHeatingCoolingState(ctx *gin.Context) {
-	newMode := ctx.Param("id")
-        log.Printf("newMode: %v", newMode)
+        var param intParam
+        if err := ctx.ShouldBindUri(&param); err != nil {
+                ctx.JSON(http.StatusBadRequest, gin.H{"msg": err})
+                return
+        }
+
+        c.state.CurrentHeatingCoolingState = param.ID
+        c.state.TargetHeatingCoolingState = param.ID
+        c.state.save()
+
+        log.Printf("newMode: %v", param.ID)
 }
 
 func (c *Controller) TargetTemperature(ctx *gin.Context) {
-	newTemp := ctx.Param("id")
-        log.Printf("newTemp: %v", newTemp)
+        var param floatParam
+        if err := ctx.ShouldBindUri(&param); err != nil {
+                ctx.JSON(http.StatusBadRequest, gin.H{"msg": err})
+                return
+        }
+
+        c.state.CurrentTemperature = param.ID
+        c.state.TargetTemperature = param.ID
+        c.state.save()
+
+        log.Printf("newTemp: %v", param.ID)
 }
 
 func (c *Controller) TargetRelativeHumidity(ctx *gin.Context) {
-	newHumi := ctx.Param("id")
-        log.Printf("newHumi: %v", newHumi)
+        var param floatParam
+        if err := ctx.ShouldBindUri(&param); err != nil {
+                ctx.JSON(http.StatusBadRequest, gin.H{"msg": err})
+                return
+        }
+
+        c.state.CurrentRelativeHumidity = param.ID
+        c.state.TargetRelativeHumidity = param.ID
+        c.state.save()
+
+        log.Printf("newHumi: %v", param.ID)
 }

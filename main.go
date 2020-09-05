@@ -44,19 +44,9 @@ func main() {
 
 	client := bto.NewIRServiceClient(conn)
         irclient := bto.NewThermostatController(client, conf)
-	ctrl := Controller{
-		Client: irclient,
-		State: Status{
-			CurrentHeatingCoolingState: 0,
-			CurrentTemperature:         0,
-			CurrentRelativeHumidity:    0,
-			TargetHeatingCoolingState:  0,
-			TargetTemperature:          0,
-			TargetRelativeHumidity:     0,
-		},
-	}
+        ctrl := NewController(irclient)
 	r := gin.Default()
-	routing(r, &ctrl)
+	routing(r, ctrl)
 
 	r.Run(":3000")
 }
