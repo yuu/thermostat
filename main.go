@@ -27,7 +27,7 @@ func main() {
         var (
                 host = flag.String("host", "localhost", "host address")
                 port = flag.Int("port", 50051, "port number")
-                irPath = flag.String("ir", "", "ir data path")
+                irPath = flag.String("ir", "irdata.toml", "ir data path")
         )
         flag.Parse()
 
