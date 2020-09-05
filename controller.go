@@ -71,11 +71,34 @@ func (c *Controller) TargetHeatingCoolingState(ctx *gin.Context) {
                 return
         }
 
+        if c.state.CurrentHeatingCoolingState == param.ID {
+                ctx.JSON(http.StatusOK, gin.H{})
+                return
+        }
+
+        switch param.ID {
+        case MODE_OFF:
+                c.irClient.Off()
+        case MODE_HEAT:
+                // TODO
+                c.irClient.On()
+        case MODE_COOL:
+                // TODO
+                c.irClient.On()
+        case MODE_AUTO:
+                // TODO
+                c.irClient.On()
+        default:
+                ctx.JSON(http.StatusBadRequest, gin.H{"msg": "out of range"})
+                return
+        }
+
         c.state.CurrentHeatingCoolingState = param.ID
         c.state.TargetHeatingCoolingState = param.ID
         c.state.save()
 
         log.Printf("newMode: %v", param.ID)
+        ctx.JSON(http.StatusOK, gin.H{})
 }
 
 func (c *Controller) TargetTemperature(ctx *gin.Context) {
@@ -85,11 +108,20 @@ func (c *Controller) TargetTemperature(ctx *gin.Context) {
                 return
         }
 
+        if c.state.CurrentTemperature < param.ID {
+                c.irClient.Up()
+        }
+
+        if c.state.CurrentTemperature > param.ID {
+                c.irClient.Down()
+        }
+
         c.state.CurrentTemperature = param.ID
         c.state.TargetTemperature = param.ID
         c.state.save()
 
         log.Printf("newTemp: %v", param.ID)
+        ctx.JSON(http.StatusOK, gin.H{})
 }
 
 func (c *Controller) TargetRelativeHumidity(ctx *gin.Context) {
@@ -104,4 +136,5 @@ func (c *Controller) TargetRelativeHumidity(ctx *gin.Context) {
         c.state.save()
 
         log.Printf("newHumi: %v", param.ID)
+        ctx.JSON(http.StatusOK, gin.H{})
 }
