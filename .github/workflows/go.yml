@@ -32,10 +32,9 @@ jobs:
 
     - name: Download Modules
       if: steps.cache.outputs.cache-hit != 'true'
-      run: go mod download
-
-    - name: Install dependecies tools
-      run: go install github.com/golang/protobuf/{proto,protoc-gen-go}
+      run: |
+        go mod download
+        go get github.com/golang/protobuf/{proto,protoc-gen-go}
 
     - name: Generate code with gRPC
       run: make generate
