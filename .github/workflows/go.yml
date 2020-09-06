@@ -23,7 +23,7 @@ jobs:
             goarch: arm
 
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}-latest
     steps:
 
     - name: Set up Go 1.x
@@ -58,11 +58,11 @@ jobs:
       run: make generate
 
     - name: Build
-      run: go build
+      run: go build -o thermostat-${{ matrix.os }}-${{ matrix.goarch }}
       env:
-          GOARCH: ${{ matrix.goarch }}
+        GOARCH: ${{ matrix.goarch }}
 
     - name: Upload artifact to share url with other jobs
       uses: actions/upload-artifact@v2
       with:
-        path: thermostat*
+        path: thermostat-*
