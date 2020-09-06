@@ -19,6 +19,11 @@ jobs:
         go-version: ^1.15
       id: go
 
+    - name: Install Protoc
+      uses: arduino/setup-protoc@v1
+      with:
+        version: '3.13.x'
+
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
@@ -34,7 +39,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
         go mod download
-        go get github.com/golang/protobuf/{proto,protoc-gen-go}
+        go get github.com/golang/protobuf/protoc-gen-go
 
     - name: Generate code with gRPC
       run: make generate
