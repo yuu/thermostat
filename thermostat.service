@@ -1,0 +1,17 @@
+[Unit]
+Description=thermostat Server 
+After=syslog.target network-online.target
+Before=homebridge.service
+
+[Service]
+Type=simple
+# Adapt this to your specific setup (could be /usr/bin/homebridge)
+# See comments below for more information
+ExecStart=/usr/local/bin/thermostat -ir /usr/local/share/irdata.toml
+Restart=on-failure
+RestartSec=10
+KillMode=process
+User=pi
+
+[Install]
+WantedBy=multi-user.target
