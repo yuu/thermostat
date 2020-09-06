@@ -19,9 +19,6 @@ jobs:
         go-version: ^1.15
       id: go
 
-    - name: Install dependecies tools
-      run: go get -u github.com/golang/protobuf/protoc-gen-go@1.25.0
-
     - name: Check out code into the Go module directory
       uses: actions/checkout@v2
 
@@ -36,6 +33,12 @@ jobs:
     - name: Download Modules
       if: steps.cache.outputs.cache-hit != 'true'
       run: go mod download
+
+    - name: Install dependecies tools
+      run: go install github.com/golang/protobuf/protoc-gen-go
+
+    - name: Generate code with gRPC
+      run: make generate
 
     - name: Build
       run: go build -mod=vendor
