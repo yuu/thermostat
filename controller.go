@@ -21,13 +21,13 @@ const (
 type Status struct {
         handler defaults.Defaults
 
-        CurrentHeatingCoolingState int `json:"CurrentHeatingCoolingState"`
-        CurrentTemperature         float64 `json:"CurrentTemperature"`
-        CurrentRelativeHumidity    float64 `json:"CurrentRelativeHumidity"`
+        CurrentHeatingCoolingState int `json:"currentHeatingCoolingState"`
+        CurrentTemperature         float64 `json:"currentTemperature"`
+        CurrentRelativeHumidity    float64 `json:"currentRelativeHumidity"`
 
-        TargetHeatingCoolingState  int `json:"TargetHeatingCoolingState"`
-        TargetTemperature          float64 `json:"TargetTemperature"`
-        TargetRelativeHumidity     float64 `json:"TargetRelativeHumidity"`
+        TargetHeatingCoolingState  int `json:"targetHeatingCoolingState"`
+        TargetTemperature          float64 `json:"targetTemperature"`
+        TargetRelativeHumidity     float64 `json:"targetRelativeHumidity"`
 }
 
 func (s *Status) save() {
