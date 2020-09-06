@@ -108,6 +108,9 @@ func (c *Controller) TargetTemperature(ctx *gin.Context) {
                 return
         }
 
+        ctx.JSON(http.StatusNotImplemented, gin.H{})
+        return
+
         if c.state.CurrentTemperature < param.ID {
                 c.irClient.Up()
         }
@@ -130,6 +133,9 @@ func (c *Controller) TargetRelativeHumidity(ctx *gin.Context) {
                 ctx.JSON(http.StatusBadRequest, gin.H{"msg": err})
                 return
         }
+
+        ctx.JSON(http.StatusNotImplemented, gin.H{})
+        return
 
         c.state.CurrentRelativeHumidity = param.ID
         c.state.TargetRelativeHumidity = param.ID
